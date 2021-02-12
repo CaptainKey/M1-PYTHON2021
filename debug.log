@@ -1,0 +1,5 @@
+DEBUG 2021-02-12 11:27:47,633 Je suis un debug
+INFO 2021-02-12 11:27:47,633 Je suis un info
+WARNING 2021-02-12 11:27:47,633 Je suis un warning
+ERROR 2021-02-12 11:27:47,634 Je suis un error
+CRITICAL 2021-02-12 11:27:47,634 Je suis un critical
