@@ -3,15 +3,18 @@ from tqdm import tqdm
 import tarfile
 import requests 
 import os 
+
+
 class dataset:
-    def __init__(self,file_name):
+    def __init__(self,file_name,download=False):
         # Initialisation de la base de données
         self.url = "http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz"
         self.file_name = file_name
         self.imgs = []
         self.labels = []
         # self.read_dataset()
-        self.download_base()
+        if download:
+            self.download_base()
 
     def __len__(self):
         # Retourne la taille de la base de données
