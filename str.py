@@ -23,5 +23,6 @@
 # new_chaine  = chaine.replace('h','*')
 # print(new_chaine)
 
-chaine = 'qskldj\'ffslqj'
-print(chaine)
+# chaine = 'qskldj\'ffslqj'
+# print(chaine)
+
