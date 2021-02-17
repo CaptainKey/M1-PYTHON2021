@@ -1,4 +1,59 @@
 class Convolution():
+    """
+        args : 
+            stride (pas du noyau (kernel))
+            padding 
+            nombre de filtres (nb_filtre) 
+            nombre de canaux  (nb_channel)
+            kernel_size_x 
+            kernel_size_y
+
+            dim_params = [nb_filtre,nb_channel,kernel_size_y,kernel_size_x]
+
+            X_out_dim = [ (X_in_dim + 2*padding - (kernel_size_x -1) -1)/stride  +1 ]
+            Y_out_dim = [ (Y_in_dim + 2*padding - (kernel_size_y -1) -1)/stride  +1 ]
+
+            Ex : CHANNEL = 1
+            Image dim = [32,32]
+            kernel_shape = 5 (x et y)
+            stride = 1
+            padding = 0
+
+            => X_out = ( (32 + 2*0 - (5-1) -1)/1 +1 ) = 28
+               Y_out = *** = 28
+
+            Image_entree_dim = [28,28]
+            Image_sortie_dim = [28,28]
+
+            Ex : CHANNEL = 3
+
+            Image dim = [32,32,3]
+            nb_filtre = 3
+            nb_channel = 64
+            kernel_shape = 5 (x et y)
+            stride = 1
+            padding = 0
+
+            => X_out = ( (32 + 2*0 - (5-1) -1)/1 +1 ) = 28
+               Y_out = *** = 28
+
+            Image_entree_dim = [64,28,28]
+            Image_sortie_dim = [64,28,28]
+
+        Ex :
+            Padding = 2
+
+        img = [2,1] => img_with_pad = [0,0,0,0]
+              [3,2]                   [0,2,1,0]
+                                      [0,3,2,0]
+                                      [0,0,0,0]
+
+        STRIDE = 1:
+        [0,0] => [0,0] => [0,0] ..etc...
+        [0,2]    [2,1]    [1,0]
+
+
+    """
     def __init__(self):
         pass 
     def __call__(self):
