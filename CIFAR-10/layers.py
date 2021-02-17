@@ -95,24 +95,6 @@ class Dense():
     def load_params(self,dict_params):
         pass
 
-class ReLU():
-    """
-        y = Relu(x)
-
-        y = x si x > 0
-        y = 0 si x < 0
-
-        ex : 
-
-        relu1 = ReLU()
-        x = [0,1,-10,4,2]
-        relu1(x) => [0,1,0,4,2]
-    """
-    def __init__(self,name):
-        self.name = name
-    def __call__(self,x):
-        x[x<0] = 0 
-        return x
 
 class Maxpooling():
     """
@@ -141,17 +123,55 @@ class Maxpooling():
     [6,7]
     MAX = 7
 
+    KERNEL_SHAPE = 3
+    [0,1,2]
+    [5,6,7]
+    [10,11,23]
+
+    KERNEL_SHAPE = 1
+    [0]
+
+    KERNEL_SHAPE = 4
+    [0,1,2,3]
+    ...
+    ...
+    [15,16,17,18]
     """
     def __init__(self):
         pass 
     def __call__(self):
         pass
 
-if __name__ == '__main__':
-    relu1 = ReLU('relu1')
-    print('name',relu1)
 
-    x = np.array([-1,0,2,-2])
-    print(x)
-    out = relu1(x)
-    print(out)
+class ReLU():
+    """
+        y = Relu(x)
+
+        y = x si x > 0
+        y = 0 si x < 0
+
+        ex : 
+
+        relu1 = ReLU()
+        x = [0,1,-10,4,2]
+        relu1(x) => [0,1,0,4,2]
+    """
+    def __init__(self,name):
+        self.name = name
+    def __call__(self,x):
+        x[x<0] = 0 
+        return x
+
+if __name__ == '__main__':
+    # Definition de l'operation
+    relu1 = ReLU('relu1')
+    conv1 = Convolution(kernel_shape=3,stride=2,padding=0)
+
+    # img = [[[....]]]
+    # conv1(img)
+    # print('name',relu1)
+    # x = np.array([-1,0,2,-2])
+    # print(x)
+    # out = relu1(x)
+    # print(out)
+
