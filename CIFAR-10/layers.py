@@ -1,3 +1,5 @@
+import numpy as np
+
 class Convolution():
     """
         args : 
@@ -106,10 +108,11 @@ class ReLU():
         x = [0,1,-10,4,2]
         relu1(x) => [0,1,0,4,2]
     """
-    def __init__(self):
-        pass 
-    def __call__(self):
-        pass
+    def __init__(self,name):
+        self.name = name
+    def __call__(self,x):
+        x[x<0] = 0 
+        return x
 
 class Maxpooling():
     """
@@ -145,5 +148,10 @@ class Maxpooling():
         pass
 
 if __name__ == '__main__':
+    relu1 = ReLU('relu1')
+    print('name',relu1)
 
-
+    x = np.array([-1,0,2,-2])
+    print(x)
+    out = relu1(x)
+    print(out)
