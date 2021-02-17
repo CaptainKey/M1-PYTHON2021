@@ -96,6 +96,28 @@ class Dense():
         pass
 
 
+
+
+class ReLU():
+    """
+        y = Relu(x)
+
+        y = x si x > 0
+        y = 0 si x < 0
+
+        ex : 
+
+        relu1 = ReLU()
+        x = [0,1,-10,4,2]
+        relu1(x) => [0,1,0,4,2]
+    """
+    def __init__(self,name):
+        self.name = name
+    def __call__(self,x):
+        x[x<0] = 0 
+        return x
+
+
 class Maxpooling():
     """
     x= [0,1,2,3,4]
@@ -137,41 +159,32 @@ class Maxpooling():
     ...
     [15,16,17,18]
     """
-    def __init__(self):
-        pass 
-    def __call__(self):
-        pass
-
-
-class ReLU():
-    """
-        y = Relu(x)
-
-        y = x si x > 0
-        y = 0 si x < 0
-
-        ex : 
-
-        relu1 = ReLU()
-        x = [0,1,-10,4,2]
-        relu1(x) => [0,1,0,4,2]
-    """
-    def __init__(self,name):
-        self.name = name
+    def __init__(self,name,kernel_shape,stride):
+        self.name = name 
+        self.kernel_shape = kernel_shape
+        self.stride = stride
     def __call__(self,x):
-        x[x<0] = 0 
-        return x
+        channels, height,width = x.shape
+        out = []
+        out_shape_x = int((width - (self.kernel_shape -1) -1)/self.stride)
+        out_shape_y = int((height - (self.kernel_shape -1) -1)/self.stride)
+        print(out_shape_x,out_shape_y)
+        for channel in range(channels):
+            for h in range(0,height-self.kernel_shape,self.stride):
+                for w in range(0,width-self.kernel_shape,self.stride):
+                    maximum = x[channel][h][w]
+                    for m in range(self.kernel_shape):
+                        for n in range(self.kernel_shape):
+                            if x[channel][h+m][w+n] > maximum : maximum = x[channel][h+m][w+n]
+                    out.append(maximum)
+
+        out = np.array(out).reshape((channels,out_shape_y,out_shape_x))
+        return out
 
 if __name__ == '__main__':
     # Definition de l'operation
-    relu1 = ReLU('relu1')
-    conv1 = Convolution(kernel_shape=3,stride=2,padding=0)
-
-    # img = [[[....]]]
-    # conv1(img)
-    # print('name',relu1)
-    # x = np.array([-1,0,2,-2])
-    # print(x)
-    # out = relu1(x)
-    # print(out)
-
+    maxpool1 = Maxpooling('maxpool1',3,1)
+    x = np.random.rand(3,32,32)
+    print(x.shape)
+    out = maxpool1(x)
+    print(out.shape)
