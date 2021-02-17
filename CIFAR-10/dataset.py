@@ -3,7 +3,7 @@ from tqdm import tqdm
 import tarfile
 import requests 
 import os 
-
+import matplotlib.pyplot as plt
 
 class dataset:
     def __init__(self,file_name,download=False):
@@ -12,9 +12,9 @@ class dataset:
         self.file_name = file_name
         self.imgs = []
         self.labels = []
-        # self.read_dataset()
         if download:
             self.download_base()
+        self.read_dataset()
 
     def __len__(self):
         # Retourne la taille de la base de données
@@ -24,7 +24,32 @@ class dataset:
         return self.imgs[idx],labels[idx]
     def show(self,idx):
         # Afficher via matplotlib l element X de la base de données
-        pass
+        plt.suptitle(" CIFAR-10 : images {}".format(idx))
+        img = self.imgs[idx]
+        flip_channel = np.moveaxis(self.imgs[idx],0,2)
+        
+        sub1  = plt.subplot(1,4,1)
+        sub1.set_title('RGB')
+        sub1.axis('off')
+        plt.imshow(flip_channel)
+
+        sub2  = plt.subplot(1,4,2)
+        sub2.set_title('Rouge')
+        sub2.axis('off')
+        plt.imshow(img[0],cmap='Reds')
+
+        sub3  = plt.subplot(1,4,3)
+        sub3.set_title('Vert')
+        sub3.axis('off')
+        plt.imshow(img[1],cmap='Greens')
+
+        sub4  = plt.subplot(1,4,4)
+        sub4.set_title('Bleue')
+        sub4.axis('off')
+        plt.imshow(img[2],cmap='Blues')
+
+        plt.savefig('figure.png')
+
     def read_dataset(self):
         with open(self.file_name,'rb') as file:
             for i in range(10000):
@@ -55,5 +80,6 @@ class dataset:
 
 if __name__ == '__main__':
     db = dataset('test_batch.bin')
+    db.show(10)
 
 
