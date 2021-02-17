@@ -4,6 +4,9 @@ import tarfile
 import requests 
 import os 
 import matplotlib.pyplot as plt
+import logging 
+
+
 
 class dataset:
     def __init__(self,file_name,download=False):
@@ -12,22 +15,30 @@ class dataset:
         self.file_name = file_name
         self.imgs = []
         self.labels = []
+        self.classes = []
         if download:
+            logging.INFO('Telechargement de la db')
             self.download_base()
+        logging.info('Lecture de la db')
         self.read_dataset()
+        logging.info('Lecture des classes')
+        self.read_classes()
 
     def __len__(self):
         # Retourne la taille de la base de données
-        pass
+        return len(self.imgs)
     def __getitem__(self,idx):
         # Récupération d'un élement de la base de données
-        return self.imgs[idx],labels[idx]
-    def show(self,idx):
+        return self.imgs[idx],self.labels[idx]
+    def show(self,idx):  
+        logging.info('Affichage de l image {}'.format(idx))
+    
         # Afficher via matplotlib l element X de la base de données
         plt.suptitle(" CIFAR-10 : images {}".format(idx))
         img = self.imgs[idx]
+        print(img.shape)
         flip_channel = np.moveaxis(self.imgs[idx],0,2)
-        
+        print(flip_channel.shape)
         sub1  = plt.subplot(1,4,1)
         sub1.set_title('RGB')
         sub1.axis('off')
@@ -58,7 +69,12 @@ class dataset:
                 byte_array = file.read(3072)
                 img = [byte for byte in byte_array]
                 self.imgs.append( np.array(img,'uint8').reshape(3,32,32) )
-    
+    def read_classes(self):
+        file = open('batches.meta.txt','r')
+        classes = file.read().split('\n')
+        classes = list(filter(lambda classe: classe != '',classes))
+        file.close()
+        self.classes = classes
     def download_base(self):
         # Télécharger la base de données si non existante
         req = requests.get(self.url, stream=True)
@@ -79,7 +95,11 @@ class dataset:
         os.remove(tar_gz)
 
 if __name__ == '__main__':
+    logging.basicConfig(filename='debug.log',level=logging.INFO,format='%(levelname)s %(asctime)s %(message)s',filemode='w')
+
     db = dataset('test_batch.bin')
     db.show(10)
+    print(len(db))
+    print(db.classes)
 
 
