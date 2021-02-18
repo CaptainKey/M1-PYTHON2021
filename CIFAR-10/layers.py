@@ -185,6 +185,7 @@ class Dense():
     def load_bias(self,new_bias):
         assert self.bias.shape == new_bias.shape, 'Mauvaise dimension'
         self.bias = new_bias
+        
     def load_params(self,dict_params):
         self.load_weight(dict_params['weight'])
         self.load_bias(dict_params['bias'])
@@ -262,7 +263,6 @@ class Maxpooling():
         out = []
         out_shape_x = int((width - self.kernel_shape ) / self.stride)+1
         out_shape_y = int((height - self.kernel_shape) / self.stride)+1
-        print(out_shape_x,out_shape_y)
         for channel in range(channels):
             for h in range(0,height-self.kernel_shape+1,self.stride):
                 for w in range(0,width-self.kernel_shape+1,self.stride):
@@ -271,7 +271,6 @@ class Maxpooling():
                         for n in range(self.kernel_shape):
                             if x[channel][h+m][w+n] > maximum : maximum = x[channel][h+m][w+n]
                     out.append(maximum)
-        print(len(out))
         out = np.array(out).reshape((channels,out_shape_y,out_shape_x))
         return out
 

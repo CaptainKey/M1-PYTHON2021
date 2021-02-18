@@ -29,6 +29,7 @@ class dataset:
         return len(self.imgs)
     def __getitem__(self,idx):
         # Récupération d'un élement de la base de données
+        print('Récupération de l image {}'.format(idx))
         return self.imgs[idx],self.labels[idx]
     def show(self,idx):  
         logging.info('Affichage de l image {}'.format(idx))
