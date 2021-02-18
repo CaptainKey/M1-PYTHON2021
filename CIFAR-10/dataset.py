@@ -17,7 +17,7 @@ class dataset:
         self.labels = []
         self.classes = []
         if download:
-            logging.INFO('Telechargement de la db')
+            logging.info('Telechargement de la db')
             self.download_base()
         logging.info('Lecture de la db')
         self.read_dataset()
@@ -71,7 +71,7 @@ class dataset:
                 img = [byte for byte in byte_array]
                 self.imgs.append( np.array(img,'uint8').reshape(3,32,32) )
     def read_classes(self):
-        file = open('batches.meta.txt','r')
+        file = open('cifar-10-batches-bin/batches.meta.txt','r')
         classes = file.read().split('\n')
         classes = list(filter(lambda classe: classe != '',classes))
         file.close()
@@ -98,7 +98,7 @@ class dataset:
 if __name__ == '__main__':
     logging.basicConfig(filename='debug.log',level=logging.INFO,format='%(levelname)s %(asctime)s %(message)s',filemode='w')
 
-    db = dataset('test_batch.bin')
+    db = dataset('cifar-10-batches-bin/test_batch.bin')
     db.show(10)
     print(len(db))
     print(db.classes)
