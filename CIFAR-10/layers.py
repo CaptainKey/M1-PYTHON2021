@@ -131,8 +131,6 @@ class Convolution():
                             [5,6,7,8]
                             [9,10,11,12]
                             [13,14,15,16]
-
-
                     """
                     for channel in range(self.in_channels):
                         for m in range(self.kernel_shape):
@@ -168,11 +166,19 @@ class Dense():
         m < n
         x*weight => Taille m
     """ 
-    def __init__(self):
-        self.weight = []
-        pass 
-    def __call__(self):
-        pass
+    def __init__(self,name,dim_in,dim_out):
+        self.name = name
+        self.dim_in = dim_in
+        self.dim_out = dim_out
+
+        self.weight = np.random.rand(dim_out,dim_in)
+        self.bias   = np.random.rand(dim_out)
+
+    def __call__(self,x):
+        out = np.dot(x,np.transpose(self.weight))
+        out += self.bias
+        return out
+
     def load_weight(self,new_weight):
         assert self.weight.shape == new_weight.shape, 'Mauvaise dimension'
         self.weight = new_weight
@@ -270,34 +276,8 @@ class Maxpooling():
         return out
 
 if __name__ == '__main__':
-    # Definition de l'operation
-    # maxpool1 = Maxpooling('maxpool1',2,2)
-    # x = np.random.rand(1,4,4)
-    # for line in x:
-    #     print(line)
-    # print('shape',x.shape)
-    # out = maxpool1(x)
-    # for line in out:
-    #     print(line)
-    # print('shape',out.shape)
-    # conv1 = Convolution('conv1',3,6,5,1)
-    # x = np.ones((3,32,32))
-    # conv1(x)
-
-    conv1_weight = np.load('params/conv1.weight.save')
-    conv1_bias = np.load('params/conv1.bias.save')
-
-    img = np.ones((3,32,32))
-    conv1 = Convolution('conv1',3,6,5,1)
-    out = conv1(img)
+    dense1 = Dense('dense1',400,120)
+    x = np.random.rand(400)
+    out = dense1(x)
     print(out)
     print(out.shape)
-    # print('Taille couche',conv1.weight.shape)
-    # print('Taille chargement',conv1_weight.shape)
-
-    # print('conv1.weight[0][0]',conv1.weight[0][0])
-    # print('conv1_weight[0][0]',conv1_weight[0][0])
-
-    # conv1.load_weight(conv1_weight)
-
-    # print('conv1.weight[0][0]',conv1.weight[0][0])
