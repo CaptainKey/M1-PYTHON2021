@@ -4,46 +4,78 @@ import tarfile
 import requests 
 import os 
 import matplotlib.pyplot as plt
-import logging 
-
-
+import logging
 
 class dataset:
-    def __init__(self,file_name,download=False):
-        # Initialisation de la base de données
-        self.url = "http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz"
+    def __init__(self,file_name='test_batch.bin',classes_file='batches.meta.txt',nb_imgs=10000,download=False):
+        # Construction de la base de données
+        self.tar_name = 'cifar-10-binary.tar.gz'
+        self.url = "http://www.cs.toronto.edu/~kriz/{}".format(self.tar_name)
+        # Dossier de décompression 
+        self.folder = 'cifar-10-batches-bin'
+        # Fichier texte qui comprend les noms des classes
+        self.classes_file = classes_file
+        # Fichier binaire à lire pour la base de données
         self.file_name = file_name
+        
+        # Nombre d'image à lire
+        self.nb_imgs = nb_imgs
+
+        # On regarde si le dossier cifar-10-batches-bin existe, si ce n'est pas le cas alors on télécharge l'archive
+        if not os.path.exists(self.folder): 
+            logging.info('{}/ folder not found'.format(self.folder))
+            download = True
+        else:
+            logging.info('{}/ folder found'.format(self.folder))
+
+        if download:
+            logging.info('Downloading {}'.format(self.tar_name))
+            self.download_base()
+        
+        # Tableaux pour stocker les images, les labels, les classes
         self.imgs = []
         self.labels = []
         self.classes = []
-        if download:
-            logging.info('Telechargement de la db')
-            self.download_base()
-        logging.info('Lecture de la db')
+
+        # Lecture de la base de données
         self.read_dataset()
-        logging.info('Lecture des classes')
+
+        # Lecture des classes
         self.read_classes()
 
     def __len__(self):
         # Retourne la taille de la base de données
         return len(self.imgs)
     def __getitem__(self,idx):
-        # Récupération d'un élement de la base de données
-        print('Récupération de l image {}'.format(idx))
+        # Récupération de l'élement idx la base de données
+        assert idx <= len(self), logging.critical('{} does not exist in dataset (Should be between {} and {})'.format(idx,0,self.nb_imgs))
         return self.imgs[idx],self.labels[idx]
+
     def show(self,idx):  
-        logging.info('Affichage de l image {}'.format(idx))
-    
-        # Afficher via matplotlib l element X de la base de données
-        plt.suptitle(" CIFAR-10 : images {}".format(idx))
+        assert idx < len(self), logging.critical('{} does not exist in dataset (Should be between {} and {})'.format(idx,0,len(self)))
+        logging.info('Display picture {}'.format(idx))
+        
+        # Chargement de l'image que l'on souhaite afficher
         img = self.imgs[idx]
-        print(img.shape)
+        
+        # Création d'un titre pour le graphique
+        plt.suptitle(" CIFAR-10 : image {} - classe : {}".format(idx,self.classes[self.labels[idx]]))
+        
+        # Changement de la position des axes
+        # Passage de l'image en dimension (Hauteur, Largeur, Canaux) en (Canaux,Hauteur, Largeur)
         flip_channel = np.moveaxis(self.imgs[idx],0,2)
-        print(flip_channel.shape)
+
+        # Definition d'un sous graphique pour afficher l'image en RGB
+        """ 
+            plt.subplot(A,B,C)
+            A = Nombre de lignes dans le graphique
+            B = Nombre de colonne 
+            C = Position du graphique courant 
+        """
         sub1  = plt.subplot(1,4,1)
-        sub1.set_title('RGB')
-        sub1.axis('off')
-        plt.imshow(flip_channel)
+        sub1.set_title('RGB') # Définition d'un sous-titre pour le sous graphique
+        sub1.axis('off') # Désactivation de l'affichage des axes
+        plt.imshow(flip_channel) # Affichage de l'image dans le graphique
 
         sub2  = plt.subplot(1,4,2)
         sub2.set_title('Rouge')
@@ -60,47 +92,80 @@ class dataset:
         sub4.axis('off')
         plt.imshow(img[2],cmap='Blues')
 
-        plt.savefig('figure.png')
+        logging.info('Saving current figure as display{}.png'.format(idx))
+        plt.savefig('display{}.png'.format(idx)) # Sauvegarde du graphique sous le nom display{idx}.png
 
     def read_dataset(self):
-        with open(self.file_name,'rb') as file:
-            for i in range(10000):
+        # Définition du chemin vers le fichier de données
+        path = '{}/{}'.format(self.folder,self.file_name)
+        # On test si le chemin vers le fichier existe
+        assert os.path.exists(path), logging.critical('{} does not exist'.format(path))
+        logging.info('Starting reading dataset at {}'.format(path))
+
+        # Lecture du fichier
+        with open(path,'rb') as file:
+            for i in tqdm(range(self.nb_imgs),desc='Reading {}'.format(path),ascii=True):
+                # Lecture de 1 byte = Label 
                 byte = file.read(1)
                 self.labels.append(int.from_bytes(byte,byteorder='big'))
+                # Lecture de 3072 bytes - 1024 bytes pour le channel rouge,1024 bytes pour le channel vert,1024 bytes pour le channel bleue
                 byte_array = file.read(3072)
+                # Convertion des valeurs Hexa en int
                 img = [byte for byte in byte_array]
+                # Les pixels sont sur 8bits de 0 à 255 on peut donc les coder sur des entiers position sur 8 bits soit uint8
+                # Enfin converstion de la liste des pixels en tableaux numpy redimensionné sous forme d'image [CHANNEL,HEIGHT,WIDTH]
                 self.imgs.append( np.array(img,'uint8').reshape(3,32,32) )
+        logging.info('Dataset file read')
     def read_classes(self):
-        file = open('cifar-10-batches-bin/batches.meta.txt','r')
+        # Définition du chemin vers le fichier de données
+        path = '{}/{}'.format(self.folder,self.classes_file)
+        # On test si le chemin vers le fichier existe
+        assert os.path.exists(path), logging.critical('{} does not exist'.format(path))
+        logging.info('Starting reading classes file at {}'.format(path))
+        file = open(path,'r')
+        # Lecture du fichier et on créer une liste avec comme sélecteur entre chaque element \n (=Retour à la ligne)
         classes = file.read().split('\n')
+        # Utilisation d'un filtre pour enlever les valeurs vide de la liste ''
         classes = list(filter(lambda classe: classe != '',classes))
-        file.close()
+        file.close() #Fermeture du fichier
         self.classes = classes
-    def download_base(self):
-        # Télécharger la base de données si non existante
-        req = requests.get(self.url, stream=True)
-        total_size = int(req.headers.get('content-length'))
-        tar_gz = 'base.tar.gz'
+        logging.info('Classes file read')
+    
+    def uncompress_tar_gz(self):
+        # Ouverture de l'archive
+        archive = tarfile.open(self.tar_name,"r:gz")
+        # Décompression
+        logging.info("Extracting {}".format(self.tar_name))
+        archive.extractall()
+        # Fermture de l'archive
+        archive.close()
+        logging.info('Removing {}'.format(self.tar_name))
+        # Suppression de l'archive car inutile
+        os.remove(self.tar_name)
 
-        if not os.path.isfile(tar_gz):
-            with open(tar_gz,'wb') as file:
-                with tqdm(total=total_size, unit='it', unit_scale=True,desc=tar_gz,initial=0,ascii=True) as pbar:
+    def download_base(self):
+        # Lancement d'une requête HTTP de type GET pour récupérer l'archive de données
+        logging.info('Launching HTTP GET Request to {}'.format(self.url))
+        try:
+            req = requests.get(self.url, stream=True)
+        except e:
+            logging.critical('Could not get {}'.format(self.url))
+            exit(0)
+        # Récupération de la taille du fichier à travers les headers de la requête
+        total_size = int(req.headers.get('content-length'))
+        logging.info("File size : {}".format(total_size))
+
+        # On regarde si l'archive n'existe pas dans le dossier courant
+        if not os.path.isfile(self.tar_name):
+            logging.info('Downloading file {}'.format(self.tar_name))
+            with open(self.tar_name,'wb') as file:
+                with tqdm(total=total_size, unit='it', unit_scale=True,desc=self.tar_name,initial=0,ascii=True) as pbar:
                     for chunk in req.iter_content(chunk_size=1024):
                         if chunk:
                             file.write(chunk)
                             pbar.update(len(chunk))
+        else:
+            logging.info('{} already exist'.format(self.tar_name))
 
-        archive = tarfile.open(tar_gz,"r:gz")
-        archive.extractall()
-        archive.close()
-        os.remove(tar_gz)
-
-if __name__ == '__main__':
-    logging.basicConfig(filename='debug.log',level=logging.INFO,format='%(levelname)s %(asctime)s %(message)s',filemode='w')
-
-    db = dataset('cifar-10-batches-bin/test_batch.bin')
-    db.show(10)
-    print(len(db))
-    print(db.classes)
-
+        self.uncompress_tar_gz()
 

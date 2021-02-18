@@ -3,3 +3,5 @@ tmp/
 *.txt
 *.html
 *.tar.gz
+
+CIFAR-10/*.png
