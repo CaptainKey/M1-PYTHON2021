@@ -166,8 +166,8 @@ class Maxpooling():
     def __call__(self,x):
         channels, height,width = x.shape
         out = []
-        out_shape_x = int((width - self.kernel_shape ) /self.stride)+1
-        out_shape_y = int((height - self.kernel_shape) /self.stride)+1
+        out_shape_x = int((width - self.kernel_shape ) / self.stride)+1
+        out_shape_y = int((height - self.kernel_shape) / self.stride)+1
         print(out_shape_x,out_shape_y)
         for channel in range(channels):
             for h in range(0,height-self.kernel_shape+1,self.stride):
@@ -184,7 +184,11 @@ class Maxpooling():
 if __name__ == '__main__':
     # Definition de l'operation
     maxpool1 = Maxpooling('maxpool1',2,2)
-    x = np.random.rand(3,4,4)
-    print(x.shape)
+    x = np.random.rand(1,4,4)
+    for line in x:
+        print(line)
+    print('shape',x.shape)
     out = maxpool1(x)
-    print(out.shape)
+    for line in out:
+        print(line)
+    print('shape',out.shape)
