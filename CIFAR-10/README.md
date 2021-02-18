@@ -19,3 +19,7 @@ optional arguments:
   --debug            Debug option
   --nb_imgs NB_IMGS  Number of picture to use in db < 10000
 ```
+
+```
+  Works with Python 3.8.5 (default, Jul 28 2020, 12:59:40) 
+```
