@@ -4,7 +4,6 @@ class Convolution():
     """
         args : 
             stride (pas du noyau (kernel))
-            padding 
             nombre de filtres (nb_filtre) 
             nombre de canaux  (nb_channel)
             kernel_size_x 
@@ -54,12 +53,57 @@ class Convolution():
         [0,0] => [0,0] => [0,0] ..etc...
         [0,2]    [2,1]    [1,0]
 
+        dim_params = [nb_filtre,nb_channel,kernel_size_y,kernel_size_x]
 
+
+    img[0] = [1,2,3,4]
+          [5,6,7,8]
+          [9,10,11,12]
+          [13,14,15,16]
+
+    img[1] = [1,2,3,4]
+          [5,6,7,8]
+          [9,10,11,12]
+          [13,14,15,16]
+
+    img[2] = [1,2,3,4]
+          [5,6,7,8]
+          [9,10,11,12]
+          [13,14,15,16]
+
+
+    weight[0][0] = [1,2]
+                   [3,4]
+
+    weight[0][1] = [1,2]
+                   [3,4]
+
+    weight[0][2] = [1,2]
+                   [3,4]
+
+    weight[1][0] = [1,2]
+                   [3,4]
+
+    weight[1][1] = [1,2]
+                   [3,4]
+
+    weight[1][2] = [1,2]
+                   [3,4]
+    self.weight = np.random.rand(2,3,2,2)
+             
     """
-    def __init__(self):
-        pass 
-    def __call__(self):
-        pass
+    def __init__(self,name,in_channels,nb_filtre,kernel_shape,stride):
+        self.name = name
+        self.stride = stride
+        self.kernel_shape = kernel_shape
+        
+        self.weight = np.random.rand(nb_filtre,in_channels,kernel_shape,kernel_shape)
+        self.bias   = np.random.rand(nb_filtre) 
+    def __call__(self,x):
+        in_c, in_h, in_w = x.shape
+        out_h  = int( (in_h - (self.kernel_shape -1) - 1 ) / self.stride) + 1
+        out_w  = int( (in_w - (self.kernel_shape -1) - 1 ) / self.stride) + 1
+        print(out_h,out_w)
     def load_weight(self):
         pass 
     def load_bias(self):
@@ -183,12 +227,15 @@ class Maxpooling():
 
 if __name__ == '__main__':
     # Definition de l'operation
-    maxpool1 = Maxpooling('maxpool1',2,2)
-    x = np.random.rand(1,4,4)
-    for line in x:
-        print(line)
-    print('shape',x.shape)
-    out = maxpool1(x)
-    for line in out:
-        print(line)
-    print('shape',out.shape)
+    # maxpool1 = Maxpooling('maxpool1',2,2)
+    # x = np.random.rand(1,4,4)
+    # for line in x:
+    #     print(line)
+    # print('shape',x.shape)
+    # out = maxpool1(x)
+    # for line in out:
+    #     print(line)
+    # print('shape',out.shape)
+    conv1 = Convolution('conv1',3,6,5,1)
+    x = np.ones((3,32,32))
+    conv1(x)
