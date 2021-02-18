@@ -92,24 +92,65 @@ class Convolution():
     self.weight = np.random.rand(2,3,2,2)
              
     """
+
+    """
+    x =  [1,2]
+        [5,6]
+
+    x[0][0+m][0+n]
+
+    m = 0 & n = 0
+    x[0][0][0] = 1
+    m= 0 & n =1
+    x[0][0][1] = 2
+    m =1 & n =0
+    x[0][1][0] = 5
+    m = 1 & n = 1
+    x[0][1][1] = 6
+    """
     def __init__(self,name,in_channels,nb_filtre,kernel_shape,stride):
         self.name = name
         self.stride = stride
         self.kernel_shape = kernel_shape
-        
+        self.nb_filtre = nb_filtre
+        self.in_channels = in_channels
         self.weight = np.random.rand(nb_filtre,in_channels,kernel_shape,kernel_shape)
         self.bias   = np.random.rand(nb_filtre) 
     def __call__(self,x):
         in_c, in_h, in_w = x.shape
         out_h  = int( (in_h - (self.kernel_shape -1) - 1 ) / self.stride) + 1
         out_w  = int( (in_w - (self.kernel_shape -1) - 1 ) / self.stride) + 1
-        print(out_h,out_w)
-    def load_weight(self):
-        pass 
-    def load_bias(self):
-        pass
-    def load_params(self):
-        pass
+        out = []
+        for f in range(self.nb_filtre):
+            for h in range(0,out_h,self.stride):
+                for w in range(0,out_w,self.stride):
+                    acc = 0           
+                    """
+                    x[channel][0][0]
+                    img = [1,2,3,4]
+                            [5,6,7,8]
+                            [9,10,11,12]
+                            [13,14,15,16]
+
+
+                    """
+                    for channel in range(self.in_channels):
+                        for m in range(self.kernel_shape):
+                            for n in range(self.kernel_shape):
+                                x[channel][h+m][w+n] * self.weight[f][channel][m][n]
+                    acc += self.bias[f]
+                    out.append(acc)
+        return np.array(out).reshape(self.nb_filtre,out_h,out_w)
+
+    def load_weight(self,new_weight):
+        assert self.weight.shape == new_weight.shape, 'Mauvaise dimension'
+        self.weight = new_weight
+    def load_bias(self,new_bias):
+        assert self.bias.shape == new_bias.shape, 'Mauvaise dimension'
+        self.bias = new_bias
+    def load_params(self,dict_params):
+        self.load_weight(dict_params['weight'])
+        self.load_bias(dict_params['bias'])
 
 class Dense():
     """
@@ -133,11 +174,14 @@ class Dense():
     def __call__(self):
         pass
     def load_weight(self,new_weight):
-        pass 
+        assert self.weight.shape == new_weight.shape, 'Mauvaise dimension'
+        self.weight = new_weight
     def load_bias(self,new_bias):
-        pass
+        assert self.bias.shape == new_bias.shape, 'Mauvaise dimension'
+        self.bias = new_bias
     def load_params(self,dict_params):
-        pass
+        self.load_weight(dict_params['weight'])
+        self.load_bias(dict_params['bias'])
 
 
 
@@ -236,6 +280,24 @@ if __name__ == '__main__':
     # for line in out:
     #     print(line)
     # print('shape',out.shape)
+    # conv1 = Convolution('conv1',3,6,5,1)
+    # x = np.ones((3,32,32))
+    # conv1(x)
+
+    conv1_weight = np.load('params/conv1.weight.save')
+    conv1_bias = np.load('params/conv1.bias.save')
+
+    img = np.ones((3,32,32))
     conv1 = Convolution('conv1',3,6,5,1)
-    x = np.ones((3,32,32))
-    conv1(x)
+    out = conv1(img)
+    print(out)
+    print(out.shape)
+    # print('Taille couche',conv1.weight.shape)
+    # print('Taille chargement',conv1_weight.shape)
+
+    # print('conv1.weight[0][0]',conv1.weight[0][0])
+    # print('conv1_weight[0][0]',conv1_weight[0][0])
+
+    # conv1.load_weight(conv1_weight)
+
+    # print('conv1.weight[0][0]',conv1.weight[0][0])
