@@ -7,7 +7,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--debug', help='Debug option',action='store_true')
-parser.add_argument('--nb_imgs', help='Number of picture to use in db',type=int,default=10000)
+parser.add_argument('--nb_imgs', help='Number of picture to use in db < 10000',type=int,default=10000)
 args = parser.parse_args()
 
 if args.debug:
