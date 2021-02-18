@@ -135,7 +135,7 @@ class Convolution():
                     for channel in range(self.in_channels):
                         for m in range(self.kernel_shape):
                             for n in range(self.kernel_shape):
-                                x[channel][h+m][w+n] * self.weight[f][channel][m][n]
+                                acc += x[channel][h+m][w+n] * self.weight[f][channel][m][n]
                     acc += self.bias[f]
                     out.append(acc)
         return np.array(out).reshape(self.nb_filtre,out_h,out_w)
@@ -182,6 +182,7 @@ class Dense():
     def load_weight(self,new_weight):
         assert self.weight.shape == new_weight.shape, 'Mauvaise dimension'
         self.weight = new_weight
+
     def load_bias(self,new_bias):
         assert self.bias.shape == new_bias.shape, 'Mauvaise dimension'
         self.bias = new_bias

@@ -14,7 +14,7 @@ class LeNet():
     def forward(self,x):
         print(x.shape)
         x = self.conv1(x)
-        self.show("Conv 1 out",x,block=True)
+        self.show("Conv 1 out",x)
 
         print(x.shape)
         x = self.relu(x)
@@ -34,12 +34,11 @@ class LeNet():
 
         print(x.shape)
         x = self.pool(x)
-        self.show("pool 2 out",x)
+        self.show("pool 2 out",x,block=True)
 
 
         print(x.shape)
         x = x.reshape(-1)
-
 
         print(x.shape)
         x = self.dense1(x)
@@ -59,7 +58,7 @@ class LeNet():
     def load_params(self,dict_params):
         self.conv1.load_weight(dict_params['conv1_weight'])
         self.conv1.load_bias(dict_params['conv1_bias'])
-        
+
         self.conv2.load_weight(dict_params['conv2_weight'])
         self.conv2.load_bias(dict_params['conv2_bias'])
 
@@ -88,28 +87,27 @@ class LeNet():
         plt.show(block=block)
 
 if __name__ == '__main__':
-    data = dataset('test_batch.bin')
+    data = dataset('cifar-10-batches-bin/test_batch.bin',download=True)
     img, label = data[0]
-    data.show(0)
+
     net = LeNet()
 
     params = {
-        "conv1_weight" : np.load('conv1.weight.save'),
-        "conv1_bias" : np.load('conv1.bias.save'),
+        "conv1_weight" : np.load('params/conv1.weight.save'),
+        "conv1_bias" : np.load('params/conv1.bias.save'),
 
-        "conv2_weight" : np.load('conv2.weight.save'),
-        "conv2_bias" : np.load('conv2.bias.save'),
+        "conv2_weight" : np.load('params/conv2.weight.save'),
+        "conv2_bias" : np.load('params/conv2.bias.save'),
 
-        "dense1_weight" : np.load('fc1.weight.save'),
-        "dense1_bias" : np.load('fc1.bias.save'),
+        "dense1_weight" : np.load('params/fc1.weight.save'),
+        "dense1_bias" : np.load('params/fc1.bias.save'),
 
-        "dense2_weight" : np.load('fc2.weight.save'),
-        "dense2_bias" : np.load('fc2.bias.save'),
+        "dense2_weight" : np.load('params/fc2.weight.save'),
+        "dense2_bias" : np.load('params/fc2.bias.save'),
 
-        "dense3_weight" : np.load('fc3.weight.save'),
-        "dense3_bias" : np.load('fc3.bias.save')
+        "dense3_weight" : np.load('params/fc3.weight.save'),
+        "dense3_bias" : np.load('params/fc3.bias.save')
     }
-
     net.load_params(params)
 
     out = net( ( (img/255) - 0.5) / 0.5 )
