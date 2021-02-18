@@ -1,6 +1,6 @@
 tmp/
 *.bin
-*.txt
+
 *.html
 *.tar.gz
 
